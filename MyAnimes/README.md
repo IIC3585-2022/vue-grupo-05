@@ -1,6 +1,7 @@
 # MyAnimes
 
-This template should help get you started developing with Vue 3 in Vite.
+#### Para correr el proyecto se requiere una versión de Vue mayor a 3.2.25
+
 
 ## Recommended IDE Setup
 
