@@ -3,7 +3,7 @@
 
 <template>
     <ul>
-        <li><a href="#unlogged-home">My Animes</a></li>
+        <li><a href="#unlogged-home">Home</a></li>
         <li><a href="#about">About</a></li>
         <li class="log-user"><a class="active" href="#log-in">Log In</a></li>
         <li class="log-user"><a  href="#register">Register</a></li>

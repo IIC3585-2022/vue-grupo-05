@@ -3,7 +3,7 @@
 
 <template>
     <div>
-        <h3>My Animes</h3>
+        <h3>Home</h3>
         <h5>Grupo 05 - Tarea 5, Vue JS</h5>
         <p> Javiera Inostroza </p>
         <p> Elías Sabja </p>
