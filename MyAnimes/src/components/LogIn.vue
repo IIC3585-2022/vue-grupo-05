@@ -2,7 +2,7 @@
 </script>
 
 <template>    
-    <h3>Register</h3>
+    <h3>Log In</h3>
     <form>
         <div class="container">
             <label for="uname"><b>Email</b></label>
@@ -11,7 +11,7 @@
             <label for="psw"><b>Password</b></label>
             <input type="password" placeholder="Enter Password" name="psw" required>
                 
-            <button type="submit">Sign Up</button>
+            <button type="submit">Log In</button>
         </div>
     </form>    
     
