@@ -6,7 +6,7 @@ import router from "./../router";
     <ul>
         <li><router-link to="/" class="logo">Home</router-link></li>
         <li class="my-animes"><a href="#log-in">My Animes</a></li>
-        <li><router-link to="/About" class="about">About</router-link></li>
+        <li><router-link to="/about" class="about">About</router-link></li>
         <li class="log-user"><a  href="#unlogged-home">Log Out</a></li>
     </ul>
 </template>
@@ -19,7 +19,7 @@ import router from "./../router";
         overflow: hidden;
         background-color: #333;
     }
-
+    
     li {
         float: left;
     }

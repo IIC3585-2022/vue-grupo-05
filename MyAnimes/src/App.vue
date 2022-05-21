@@ -10,11 +10,11 @@ import AllAnimes from "./components/AllAnimes.vue";
 
 <template>
   <header>
-    <UnloggedHeader />
+    <LoggedHeader />
   </header>
 
   <main>
-    <AllAnimes />
+    <router-view></router-view>
   </main>
 </template>
 
