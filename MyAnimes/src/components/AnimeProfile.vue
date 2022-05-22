@@ -1,5 +1,4 @@
 <script>
-    import { ref } from 'vue';
     export default {
         data() {
             return {
@@ -10,8 +9,32 @@
         props: ['id'],
         computed: {
             getAnimeData: function () {
-                console.log("this: ", this)
                 return this.animeData
+            }
+        },
+        methods: {
+            handleSubmit: async function(event) {
+                if (event) {
+                    console.log("en event: ")
+                    var myHeaders = new Headers();
+                    myHeaders.append("Content-Type", "application/json");
+                    await fetch(
+                    "http://localhost:8001/api/review",
+                    {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: JSON.stringify({
+                            "animeId": this.id,
+                            "email": "user@uc.cl",
+                            "text": event.target.elements.name.value
+                        }),
+                        redirect: 'follow'
+                    }
+                )
+                    .then(res => res.json())
+                    .then(data => data.data);
+                }
+                
             }
         },
         async mounted() {
@@ -22,6 +45,7 @@
         }
 
     }
+    
 </script>
 
 
@@ -60,12 +84,15 @@
             </div>
         </div>
         <div class="add-comment">
-            <form class="new-comment-box" @submit.prevent="HandleSubmit">
+            <form class="new-comment-box" @submit.prevent="handleSubmit">
                 <input 
-                    type="text" 
-                    class="text-field" 
+
+                    type="search" 
+                    class="search-field" 
                     placeholder="Add a comment" 
                     required
+                    ref="comment"
+                    name="name"
                 />
             </form>
         </div>
