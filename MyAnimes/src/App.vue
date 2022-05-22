@@ -6,6 +6,8 @@ import LoggedHeader from "./components/LoggedHeader.vue";
 import About from "./components/About.vue";
 import Register from "./components/Register.vue";
 import AllAnimes from "./components/AllAnimes.vue";
+import LogIn from "./components/LogIn.vue";
+import AnimeCard from "./components/AnimeCard.vue"
 </script>
 
 <template>

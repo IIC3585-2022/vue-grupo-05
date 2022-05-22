@@ -7,7 +7,7 @@ import About from "./../components/About.vue";
 import Register from "./../components/Register.vue";
 import AllAnimes from "./../components/AllAnimes.vue";
 import AnimeCard from "./../components/AnimeCard.vue";
-
+import AnimeProfile from "./../components/AnimeProfile.vue";
 const routes = [
   {
     path: "/",
@@ -25,9 +25,10 @@ const routes = [
     component: Register
   },
   {
-    path: "/details/:type/:id",
+    path: "/details/:id",
     name: "Details",
-    component: AnimeCard
+    component: AnimeProfile,
+    props: true
   }
 ];
 

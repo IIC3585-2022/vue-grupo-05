@@ -9,12 +9,12 @@
     <div class="card__item">
         <div class="card">
             <div class="card__image card__image--fence">
-                <a :href="anime.url" target="_blank">
+                <a><router-link :to="'/details/' + anime.mal_id" class="about">
                     <img 
                         :src="anime.images.jpg.image_url" 
                         :alt="anime.title + ' Poster'" 
                     />
-                </a>
+                </router-link></a>
             </div>
             <div class="card__content">
                 <div class="card__title">{{ anime.title }}</div>
@@ -79,7 +79,6 @@
         background-size: cover;
         border-top-left-radius: 0.25rem;
         border-top-right-radius: 0.25rem;
-        filter: contrast(70%);
         overflow: hidden;
         position: relative;
         transition: filter 0.5s cubic-bezier(.43,.41,.22,.91);
