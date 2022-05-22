@@ -34,6 +34,7 @@
                     :src=getAnimeData.data.images.jpg.image_url 
                     :alt="getAnimeData.data.title + ' Poster'" 
                 />
+                <div class="div-button"><button> Add to My Animes</button></div>
             </div>
             <p class="card__text">{{ getAnimeData.data.synopsis }}</p>
         </div>
@@ -78,7 +79,7 @@
 <style scoped>
 
     img {
-        height: 400px;
+        width: 250px;
         vertical-align: middle;
     }
 
@@ -107,6 +108,26 @@
         height: 30px;
     }
 
+    button {
+        background-color: #03c04a;
+        color: white;
+        padding: 16px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.9;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    button:hover {
+        opacity: 1;
+    }
+
+    .div-button {
+        padding-top: 10px;
+    }
     .links {
         padding-top: 20px;
     }
@@ -135,6 +156,7 @@
         overflow: hidden;
         position: relative;
         transition: filter 0.5s cubic-bezier(.43,.41,.22,.91);
+        width: 250px;
     }
 
     .card__title {

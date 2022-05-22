@@ -53,7 +53,7 @@
     }
 
     button {
-        background-color: #04AA6D;
+        background-color: #03c04a;
         color: white;
         padding: 16px 20px;
         margin: 8px 0;
