@@ -1,6 +1,4 @@
 import {createRouter, createWebHistory}  from 'vue-router'
-import HelloWorld from "./../components/HelloWorld.vue";
-import TheWelcome from "./../components/TheWelcome.vue";
 import UnloggedHeader from "./../components/UnloggedHeader.vue";
 import LoggedHeader from "./../components/LoggedHeader.vue";
 import About from "./../components/About.vue";
@@ -8,6 +6,7 @@ import Register from "./../components/Register.vue";
 import AllAnimes from "./../components/AllAnimes.vue";
 import AnimeCard from "./../components/AnimeCard.vue";
 import AnimeProfile from "./../components/AnimeProfile.vue";
+import LogIn from "./../components/LogIn.vue"
 const routes = [
   {
     path: "/",
@@ -29,6 +28,11 @@ const routes = [
     name: "Details",
     component: AnimeProfile,
     props: true
+  },
+  {
+    path: "/login",
+    name: "LogIn",
+    component: LogIn
   }
 ];
 

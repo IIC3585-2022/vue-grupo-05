@@ -1,9 +1,39 @@
 <script setup>
+
+import { ref } from 'vue';
+import router from '../router';
+
+const HandleRegister = async () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({"email":"user1@gmail.com","password":"1234qwer"});
+
+    var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+    };
+
+    fetch("http://localhost:8001/api/user/", requestOptions)
+    .then(response => response.text())
+    .then(result => {
+        console.log(result)
+        router.push({path:"/"})
+    })
+    .catch(error => console.log('error', error));
+    }
+
+
+
+
+
 </script>
 
 <template>    
     <h3>Register</h3>
-    <form>
+    <form @submit.prevent="HandleRegister()">
         <div class="container">
             <label for="uname"><b>Email</b></label>
             <input type="text" placeholder="Enter Email" name="email" required>
