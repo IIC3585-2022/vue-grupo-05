@@ -3,19 +3,20 @@
         data() {
             return {
                 dataReady: false,
-                animeData: []
+                animeData: [],
+                animeComments: []
             }
         },
         props: ['id'],
         computed: {
             getAnimeData: function () {
-                return this.animeData
+                return [this.animeData, this.animeComments];
             }
         },
         methods: {
             handleSubmit: async function(event) {
                 if (event) {
-                    console.log("en event: ")
+                    console.log("Anime id: ", this.id, ", text: ", event.target.elements.name.value)
                     var myHeaders = new Headers();
                     myHeaders.append("Content-Type", "application/json");
                     await fetch(
@@ -32,7 +33,7 @@
                     }
                 )
                     .then(res => res.json())
-                    .then(data => data.data);
+                    .then(data => console.log(data.data));
                 }
                 
             }
@@ -41,6 +42,12 @@
             await fetch(`https://api.jikan.moe/v4/anime/${this.id}`)
                 .then(res => res.json())
                 .then(data => this.animeData = data)
+            await fetch(`http://localhost:8001/api/review/anime/${this.id}`, {
+                method: 'GET', redirect: 'follow'
+            })
+                .then(res => res.json())
+                .then(data => this.animeComments = data)
+
             this.dataReady = true;
         }
 
@@ -51,45 +58,35 @@
 
 <template>
     <div class="container" v-if="dataReady">
-        <div class="card__title">{{ getAnimeData.data.title }}</div>
+        <div class="card__title">{{ getAnimeData[0].data.title }}</div>
         <div class="card__content">
             <div class="card__image card__image--fence">
                 <img 
-                    :src=getAnimeData.data.images.jpg.image_url 
-                    :alt="getAnimeData.data.title + ' Poster'" 
+                    :src=getAnimeData[0].data.images.jpg.image_url 
+                    :alt="getAnimeData[0].data.title + ' Poster'" 
                 />
                 <div class="div-button"><button> Add to My Animes</button></div>
             </div>
-            <p class="card__text">{{ getAnimeData.data.synopsis }}</p>
+            <p class="card__text">{{ getAnimeData[0].data.synopsis }}</p>
         </div>
     </div>
     <div class="comments">
-        <h3>Comments</h3>
-        <div class="box-comment">
-            <div class="user-comment">
-                <div class="email">jminostroza@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhd</div>
-            </div>
-        </div>
-        <div class="box-comment">
-            <div class="user-comment">
-                <div class="email">elias@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhd</div>
-            </div>
-        </div>
-        <div class="box-comment">
-            <div class="user-comment">
-                <div class="email">samuel@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhd</div>
+        <h3>Reviews</h3>
+        <div v-if="getAnimeData[1].length > 0">
+            <div class="box-comment" v-for="comment in getAnimeData[1]">
+                <div class="user-comment">
+                    <div class="email">{{ comment.key.email }}: </div>
+                    <div class="text">{{ comment.text }}</div>
+                </div>
             </div>
         </div>
         <div class="add-comment">
             <form class="new-comment-box" @submit.prevent="handleSubmit">
                 <input 
 
-                    type="search" 
-                    class="search-field" 
-                    placeholder="Add a comment" 
+                    type="text" 
+                    class="text-field" 
+                    placeholder="Add your review" 
                     required
                     ref="comment"
                     name="name"
