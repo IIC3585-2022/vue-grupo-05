@@ -1,6 +1,4 @@
 <script setup>
-import HelloWorld from "./components/HelloWorld.vue";
-import TheWelcome from "./components/TheWelcome.vue";
 import UnloggedHeader from "./components/UnloggedHeader.vue";
 import LoggedHeader from "./components/LoggedHeader.vue";
 import About from "./components/About.vue";
