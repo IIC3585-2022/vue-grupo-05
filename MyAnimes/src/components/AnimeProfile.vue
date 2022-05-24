@@ -110,8 +110,9 @@
             </div>
         </div>
         <div class="add-comment">
-            <form class="new-comment-box" @submit.prevent="HandleSubmit">
+            <form class="new-comment-box" @submit.prevent="handleSubmit">
                 <input 
+
                     type="text" 
                     class="text-field" 
                     placeholder="Add your review" 
