@@ -25,7 +25,6 @@
         .then(response => response.json())
         .then(result => animeIds = result.animes)
         .catch(error => console.log('error', error)); 
-      console.log("ANIMES IDES: ", animeIds);
       for(let i = 0; i < animeIds.length; i++){
         await fetch(`https://api.jikan.moe/v4/anime/${animeIds[i]}`)
           .then(res => res.json())

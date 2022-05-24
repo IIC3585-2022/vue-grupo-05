@@ -1,16 +1,19 @@
 <script setup>
-import UnloggedHeader from "./components/UnloggedHeader.vue";
-import LoggedHeader from "./components/LoggedHeader.vue";
-import About from "./components/About.vue";
-import Register from "./components/Register.vue";
-import AllAnimes from "./components/AllAnimes.vue";
-import LogIn from "./components/LogIn.vue";
-import AnimeCard from "./components/AnimeCard.vue"
+  import UnloggedHeader from "./components/UnloggedHeader.vue";
+  import LoggedHeader from "./components/LoggedHeader.vue";
+  import { useStore } from 'vuex';
+  const store = useStore();
+
 </script>
 
 <template>
   <header>
-    <LoggedHeader />
+    <div v-if="store.state.token.length == 0">
+      <UnloggedHeader />
+    </div>
+    <div v-if="store.state.token.length > 0">
+      <LoggedHeader />
+    </div>
   </header>
 
   <main>

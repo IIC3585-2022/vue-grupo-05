@@ -1,12 +1,13 @@
 <script setup>
+import router from "./../router";
 </script>
 
 <template>
     <ul>
-        <li><a href="#unlogged-home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li class="log-user"><a class="active" href="#log-in">Log In</a></li>
-        <li class="log-user"><a  href="#register">Register</a></li>
+        <li><router-link to="/login">Home</router-link></li>
+        <li><router-link to="/about">About</router-link></li>
+        <li class="log-user"><router-link to="/login">Log In</router-link></li>
+        <li><router-link to="/register">Register</router-link></li>
     </ul>
 </template>
 

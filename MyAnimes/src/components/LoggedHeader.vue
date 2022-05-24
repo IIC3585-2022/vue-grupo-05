@@ -1,5 +1,12 @@
 <script setup>
 import router from "./../router";
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+const handleLogOut = () => {
+    store.state.token = "";
+}
 </script>
 
 <template>
@@ -7,7 +14,7 @@ import router from "./../router";
         <li><router-link to="/" class="logo">Home</router-link></li>
         <li class="my-animes"><router-link to="/myAnimes">My Animes</router-link></li>
         <li><router-link to="/about" class="about">About</router-link></li>
-        <li class="log-user"><a  href="#unlogged-home">Log Out</a></li>
+        <li class="log-user" v-on:click="handleLogOut"><router-link to="/login" class="about">Log Out</router-link></li>
     </ul>
 </template>
 
