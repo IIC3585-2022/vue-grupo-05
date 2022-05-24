@@ -3,13 +3,15 @@
     import { useStore } from 'vuex';
     
     const props = defineProps({
-      id: String
+      id: String,
+      reload: Boolean
     });
 
     const store = useStore();
 
     const dataReady = ref(false);
     const animeData = ref({});
+    const animeComments = ref({});
 
     const HandleAddAnime = async () => {
       const token = store.state.token;
@@ -35,12 +37,46 @@
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
       };
-
+    const HandleSubmit = async (event) => {
+        var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            await fetch("https://vue-grupo5-backend.herokuapp.com/api/review", {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify({
+                    "animeId": parseInt(props.id),
+                    "email": "user@uc.cl",
+                    "text": event.target.elements.name.value
+                }),
+                redirect: 'follow'
+            })
+            .then(res => {
+                if (res.status == 400) {
+                        alert("Ya escribiste una review en este anime.")
+                    } 
+                    return res.json();
+                })
+                .then(data => {
+                    try {
+                        animeComments.value.push(data)
+                        reload = !reload;
+                    } catch {console.log("en catch")}
+                })
+                .finally(
+                    event.target.elements.name.value = '',
+                )
+                .catch(err => console.log("ERR: ", err))
+    }
     onMounted( async () => {
-      await fetch(`https://api.jikan.moe/v4/anime/${props.id}`)
-        .then(res => res.json())
-        .then(data => animeData.value = data);
-      dataReady.value = true;
+        await fetch(`https://api.jikan.moe/v4/anime/${props.id}`)
+            .then(res => res.json())
+            .then(data => animeData.value = data);
+        await fetch(`https://vue-grupo5-backend.herokuapp.com/api/review/anime/${props.id}`, {
+            method: 'GET', redirect: 'follow'
+        })
+            .then(res => res.json())
+            .then(data => animeComments.value = data);
+        dataReady.value = true;
     });
 </script>
 
@@ -64,23 +100,13 @@
         </div>
     </div>
     <div class="comments">
-        <h3>Comments</h3>
-        <div class="box-comment">
-            <div class="user-comment">
-                <div class="email">jminostroza@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhd</div>
-            </div>
-        </div>
-        <div class="box-comment">
-            <div class="user-comment">
-                <div class="email">elias@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhd</div>
-            </div>
-        </div>
-        <div class="box-comment">
-            <div class="user-comment">
-                <div class="email">samuel@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhdDDDDDDDDDDDD</div>
+        <h3>Reviews</h3>
+        <div v-if="animeComments.length > 0" >
+            <div class="box-comment" v-for="comment in animeComments" :key="comment.key.email">
+                <div class="user-comment">
+                    <div class="email">{{ comment.key.email }}: </div>
+                    <div class="text">{{ comment.text }}</div>
+                </div>
             </div>
         </div>
         <div class="add-comment">
@@ -88,16 +114,14 @@
                 <input 
                     type="text" 
                     class="text-field" 
-                    placeholder="Add a comment" 
+                    placeholder="Add your review" 
                     required
+                    ref="comment"
+                    name="name"
                 />
             </form>
         </div>
     </div>
-    
-
-
-
 </template>
 
 <style scoped>
