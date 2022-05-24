@@ -8,12 +8,15 @@ const store = useStore();
 
 let logged = ref(false);
 
-const HandleLogin = async () => {
+const HandleLogin = async (event) => {
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({"email":"test9@uc.cl","password":"123456"});
+        var raw = JSON.stringify({
+            "email": event.target.elements.email.value,
+            "password": event.target.elements.psw.value
+        });
 
         var requestOptions = {
         method: 'POST',
@@ -21,17 +24,13 @@ const HandleLogin = async () => {
         body: raw,
         redirect: 'follow'
         };
-
-        //console.log("in handle")
-
         await fetch("https://vue-grupo5-backend.herokuapp.com/api/login", requestOptions)
             .then(response => response.json())
             .then(result => {
                 logged=true;
                 store.dispatch('addToken', result.token);
-                //console.log(logged)
-                //router.push({path:"/"})
-                router.push({path: "/myAnimes"});
+                store.dispatch('addEmail', event.target.elements.email.value)
+                router.push({path: "/"});
             })
             .catch(error => console.log('error', error));
     }
@@ -41,7 +40,7 @@ const HandleLogin = async () => {
 
 <template>    
     <h3>Log In</h3>
-    <form @submit.prevent="HandleLogin()">
+    <form @submit.prevent="HandleLogin">
         <div class="container">
             <label for="uname"><b>Email</b></label>
             <input type="text" placeholder="Enter Email" name="email" required>
