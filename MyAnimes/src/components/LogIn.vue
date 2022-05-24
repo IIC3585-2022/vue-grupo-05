@@ -2,6 +2,9 @@
 
 import { ref } from 'vue';
 import router from '../router';
+import { useStore } from 'vuex';
+    
+const store = useStore();
 
 let logged = ref(false);
 
@@ -10,7 +13,7 @@ const HandleLogin = async () => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({"email":"user@gmail.com","password":"1234qwer"});
+        var raw = JSON.stringify({"email":"test9@uc.cl","password":"123456"});
 
         var requestOptions = {
         method: 'POST',
@@ -19,14 +22,16 @@ const HandleLogin = async () => {
         redirect: 'follow'
         };
 
-        console.log("in handle")
+        //console.log("in handle")
 
-        await fetch("http://localhost:8001/api/login", requestOptions)
-            .then(response => response.text())
+        await fetch("https://vue-grupo5-backend.herokuapp.com/api/login", requestOptions)
+            .then(response => response.json())
             .then(result => {
                 logged=true;
-                console.log(logged)
-                router.push({path:"/"})
+                store.dispatch('addToken', result.token);
+                //console.log(logged)
+                //router.push({path:"/"})
+                router.push({path: "/myAnimes"});
             })
             .catch(error => console.log('error', error));
     }

@@ -1,42 +1,66 @@
-<script>
-    import { ref } from 'vue';
-    export default {
-        data() {
-            return {
-                dataReady: false,
-                animeData: []
-            }
-        },
-        props: ['id'],
-        computed: {
-            getAnimeData: function () {
-                console.log("this: ", this)
-                return this.animeData
-            }
-        },
-        async mounted() {
-            await fetch(`https://api.jikan.moe/v4/anime/${this.id}`)
-                .then(res => res.json())
-                .then(data => this.animeData = data)
-            this.dataReady = true;
-        }
+<script setup>
+    import { ref, onMounted } from 'vue';
+    import { useStore } from 'vuex';
+    
+    const props = defineProps({
+      id: String
+    });
 
-    }
+    const store = useStore();
+
+    const dataReady = ref(false);
+    const animeData = ref({});
+
+    const HandleAddAnime = async () => {
+      const token = store.state.token;
+      console.log("We have a token! " + token);
+      
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        "animeId": props.id
+      });
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      await fetch("https://vue-grupo5-backend.herokuapp.com/api/user/anime", requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+      };
+
+    onMounted( async () => {
+      await fetch(`https://api.jikan.moe/v4/anime/${props.id}`)
+        .then(res => res.json())
+        .then(data => animeData.value = data);
+      dataReady.value = true;
+    });
 </script>
 
 
 <template>
     <div class="container" v-if="dataReady">
-        <div class="card__title">{{ getAnimeData.data.title }}</div>
+        <div class="card__title">{{ animeData.data.title }}</div>
         <div class="card__content">
             <div class="card__image card__image--fence">
                 <img 
-                    :src=getAnimeData.data.images.jpg.image_url 
-                    :alt="getAnimeData.data.title + ' Poster'" 
+                    :src=animeData.data.images.jpg.image_url 
+                    :alt="animeData.data.title + ' Poster'" 
                 />
-                <div class="div-button"><button> Add to My Animes</button></div>
+                <form class="search-box" @submit.prevent="HandleAddAnime">
+                  <div class="div-button">
+                    <button type="submit"> Add to My Animes</button>
+                  </div>
+                </form>
             </div>
-            <p class="card__text">{{ getAnimeData.data.synopsis }}</p>
+            <p class="card__text">{{ animeData.data.synopsis }}</p>
         </div>
     </div>
     <div class="comments">
@@ -56,7 +80,7 @@
         <div class="box-comment">
             <div class="user-comment">
                 <div class="email">samuel@uc.cl: </div>
-                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhd</div>
+                <div class="text">muy buena askjhdjh ahsdd askdasd ksdha jsdhs ksdha ksdah asjhdDDDDDDDDDDDD</div>
             </div>
         </div>
         <div class="add-comment">
