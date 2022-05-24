@@ -1,17 +1,53 @@
 <script setup>
+
+import { ref } from 'vue';
+import router from '../router';
+
+let logged = ref(false);
+
+const HandleLogin = async () => {
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({"email":"user@gmail.com","password":"1234qwer"});
+
+        var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+        };
+
+        console.log("in handle")
+
+        await fetch("http://localhost:8001/api/login", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                logged=true;
+                console.log(logged)
+                router.push({path:"/"})
+            })
+            .catch(error => console.log('error', error));
+    }
+
+
 </script>
 
 <template>    
     <h3>Log In</h3>
-    <form>
+    <form @submit.prevent="HandleLogin()">
         <div class="container">
             <label for="uname"><b>Email</b></label>
             <input type="text" placeholder="Enter Email" name="email" required>
 
             <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
-                
-            <button type="submit">Log In</button>
+            <input type="password" placeholder="Enter Password" name="psw" required>               
+            
+                <button type="submit" >
+                    Log In                
+                </button>
+            
         </div>
     </form>    
     
