@@ -5,7 +5,7 @@ import router from "./../router";
 <template>
     <ul>
         <li><router-link to="/" class="logo">Home</router-link></li>
-        <li class="my-animes"><a href="#log-in">My Animes</a></li>
+        <li class="my-animes"><router-link to="/myAnimes">My Animes</router-link></li>
         <li><router-link to="/about" class="about">About</router-link></li>
         <li class="log-user"><a  href="#unlogged-home">Log Out</a></li>
     </ul>

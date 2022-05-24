@@ -7,6 +7,7 @@ import AllAnimes from "./../components/AllAnimes.vue";
 import AnimeCard from "./../components/AnimeCard.vue";
 import AnimeProfile from "./../components/AnimeProfile.vue";
 import LogIn from "./../components/LogIn.vue"
+import MyAnimes from "./../components/MyAnimes.vue";
 const routes = [
   {
     path: "/",
@@ -33,7 +34,12 @@ const routes = [
     path: "/login",
     name: "LogIn",
     component: LogIn
-  }
+  },
+  {
+    path: "/myAnimes",
+    name: "MyAnimes",
+    component: MyAnimes
+  },
 ];
 
 const router = createRouter({
