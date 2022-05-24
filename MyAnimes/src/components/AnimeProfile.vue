@@ -1,108 +1,104 @@
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { useStore } from 'vuex';
-    
-    const props = defineProps({
-      id: String,
-      reload: Boolean
-    });
 
     const store = useStore();
-
+    const props = defineProps({
+      id: String
+    });
+    console.log("Id: " + props.id);
     const dataReady = ref(false);
     const animeData = ref({});
-    const animeComments = ref({});
-
-    const HandleAddAnime = async () => {
-      const token = store.state.token;
-      console.log("We have a token! " + token);
-      
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${token}`);
-      myHeaders.append("Content-Type", "application/json");
-
-      var raw = JSON.stringify({
-        "animeId": props.id
-      });
-
+    const animeComments = ref([]);
+    const getAnimeData = computed(() => [animeData.value, animeComments.value]);
+    const loadAnimeComments = async () => {
       var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
+        method: 'GET',
         redirect: 'follow'
       };
-
-      await fetch("https://vue-grupo5-backend.herokuapp.com/api/user/anime", requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
-      };
-    const HandleSubmit = async (event) => {
+      fetch(`https://vue-grupo5-backend.herokuapp.com/api/review/anime/${props.id}`, requestOptions)
+        .then(response => response.json())
+        .then(result => animeComments.value = result)
+        .catch(error => console.log('error', error));  
+    }
+    const handleSubmit = async (event) => {
+      if (event){
         var myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
-            await fetch("https://vue-grupo5-backend.herokuapp.com/api/review", {
+        myHeaders.append("Content-Type", "application/json");
+        console.log("ebent.tarhet.elements: ", event.target.elements)
+        await fetch("https://vue-grupo5-backend.herokuapp.com/api/review", {
                 method: 'POST',
                 headers: myHeaders,
                 body: JSON.stringify({
                     "animeId": parseInt(props.id),
-                    "email": "user@uc.cl",
-                    "text": event.target.elements.name.value
+                    "email": store.state.email,
+                    "text": event.target.elements.review.value
                 }),
                 redirect: 'follow'
-            })
-            .then(res => {
-                if (res.status == 400) {
-                        alert("Ya escribiste una review en este anime.")
-                    } 
-                    return res.json();
-                })
-                .then(data => {
-                    try {
-                        animeComments.value.push(data)
-                        reload = !reload;
-                    } catch {console.log("en catch")}
-                })
-                .finally(
-                    event.target.elements.name.value = '',
-                )
-                .catch(err => console.log("ERR: ", err))
+        }).then(res => {
+          if (res.status == 400) {
+            alert("Ya escribiste una review en este anime.")
+          }
+          return res.json();
+        }).then(data => {
+            console.log(data);
+            try {
+                animeComments.value = [...animeComments.value, data];
+            } catch {}
+        }).finally(
+          event.target.elements.review.value = '',
+        ).catch(err => console.log("ERR: ", err))
+      }
+    };
+    const handleClick = async (event) => {
+        const token = store.state.token;
+        console.log("token: ", token)
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer " + store.state.token);
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({ "animeId": props.id });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("https://vue-grupo5-backend.herokuapp.com/api/user/anime", requestOptions)
+            .then(response => response.json())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
     }
     onMounted( async () => {
-        await fetch(`https://api.jikan.moe/v4/anime/${props.id}`)
-            .then(res => res.json())
-            .then(data => animeData.value = data);
-        await fetch(`https://vue-grupo5-backend.herokuapp.com/api/review/anime/${props.id}`, {
-            method: 'GET', redirect: 'follow'
-        })
-            .then(res => res.json())
-            .then(data => animeComments.value = data);
-        dataReady.value = true;
+      await fetch(`https://api.jikan.moe/v4/anime/${props.id}`)
+        .then(res => res.json())
+        .then(data => animeData.value = data);
+      await loadAnimeComments();
+      dataReady.value = true;
     });
 </script>
 
 
 <template>
     <div class="container" v-if="dataReady">
-        <div class="card__title">{{ animeData.data.title }}</div>
+        <div class="card__title">{{ getAnimeData[0].data.title }}</div>
         <div class="card__content">
             <div class="card__image card__image--fence">
                 <img 
-                    :src=animeData.data.images.jpg.image_url 
-                    :alt="animeData.data.title + ' Poster'" 
+                    :src=getAnimeData[0].data.images.jpg.image_url 
+                    :alt="getAnimeData[0].data.title + ' Poster'" 
                 />
-                <form class="search-box" @submit.prevent="HandleAddAnime">
-                  <div class="div-button">
-                    <button type="submit"> Add to My Animes</button>
-                  </div>
-                </form>
+                <div class="div-button"><button v-on:click="handleClick"> Add to My Animes</button></div>
             </div>
-            <p class="card__text">{{ animeData.data.synopsis }}</p>
+            <p class="card__text">{{ getAnimeData[0].data.synopsis }}</p>
         </div>
     </div>
     <div class="comments">
         <h3>Reviews</h3>
-        <div v-if="animeComments.length > 0" >
-            <div class="box-comment" v-for="comment in animeComments" :key="comment.key.email">
+        <div v-if="getAnimeData[1].length > 0">
+            <div class="box-comment" v-for="comment in getAnimeData[1]" :key="comment.key.email">
                 <div class="user-comment">
                     <div class="email">{{ comment.key.email }}: </div>
                     <div class="text">{{ comment.text }}</div>
@@ -118,7 +114,7 @@
                     placeholder="Add your review" 
                     required
                     ref="comment"
-                    name="name"
+                    name="review"
                 />
             </form>
         </div>
@@ -126,12 +122,10 @@
 </template>
 
 <style scoped>
-
     img {
         width: 250px;
         vertical-align: middle;
     }
-
     p {
         display: block;/* or inline-block */
         text-overflow: ellipsis;
@@ -139,14 +133,12 @@
         overflow: hidden;
         color: white;
     }
-
     h3 {
         color: white;
         font-size: 2.5rem;
         letter-spacing: 2px;
         padding-bottom: 15px;
     }
-
     input {
         font-size: 1rem;
         display: block;
@@ -156,7 +148,6 @@
         border-radius: 10px;
         height: 30px;
     }
-
     button {
         background-color: #03c04a;
         color: white;
@@ -169,25 +160,21 @@
         font-size: 15px;
         font-weight: bold;
     }
-
     button:hover {
         opacity: 1;
     }
-
     .div-button {
         padding-top: 10px;
     }
     .links {
         padding-top: 20px;
     }
-
     .container {
         display: flex;
         flex-direction: column;
         padding: 50px;
         width: 90%;
     }
-
     .card__content {
         display: flex;
         flex: 1 1 auto;
@@ -195,7 +182,6 @@
         margin-left: auto;
         margin-right: auto;
     }
-
     .card__image {
         background-position: center center;
         background-repeat: no-repeat;
@@ -207,7 +193,6 @@
         transition: filter 0.5s cubic-bezier(.43,.41,.22,.91);
         width: 250px;
     }
-
     .card__title {
         color: white;
         font-size: 3.9rem;
@@ -223,14 +208,12 @@
         max-width: 70%;
         padding-left: 50px;
     }
-
     .comments { 
         display: flex;
         flex-direction: column;
         padding-left: 50px;
         width: 90%;
     }
-
     .user-comment { 
         display: flex;
         flex-direction: column;
@@ -239,7 +222,6 @@
         color: white;
         border-radius: 10px;
     }
-
     .box-comment {
         padding-bottom: 10px;
     }
@@ -247,18 +229,13 @@
         font-size: 17px;
         font-weight: bold;
     }
-
     .text {
         padding-left: 30px;
         padding-top: 8px;
     }
-
     .add-comment {
         display: flex;
         flex-direction: column;
         padding-bottom: 40px;
     }
-
-
-
 </style>

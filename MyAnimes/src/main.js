@@ -6,6 +6,7 @@ import router from "./router";
 const store = createStore({
   state: {
     token: "",
+    email: "",
     myAnimes: []
   },
   mutations: {
@@ -14,6 +15,9 @@ const store = createStore({
     },
     updateMyAnimes(state, payload) {
       state.myAnimes = [...state.myAnimes, payload];
+    },
+    updateEmail(state, payload) {
+      state.email = payload
     }
   },
   actions: {
@@ -23,10 +27,15 @@ const store = createStore({
     },
     addAnimeToMyAnimes(context, payload) {
       context.commit('updateMyAnimes', payload);
+    },
+    addEmail(context, payload) {
+      const email = payload;
+      context.commit('updateEmail', email);
     }
   },
   getters: {
-    getToken: function (state) { return state.token }
+    getToken: function (state) { return state.token },
+    getEmail: function (state) { return state.email }
  }
 });
 
