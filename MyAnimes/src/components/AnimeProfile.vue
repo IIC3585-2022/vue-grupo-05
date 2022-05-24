@@ -16,24 +16,34 @@
         methods: {
             handleSubmit: async function(event) {
                 if (event) {
-                    console.log("Anime id: ", this.id, ", text: ", event.target.elements.name.value)
                     var myHeaders = new Headers();
                     myHeaders.append("Content-Type", "application/json");
-                    await fetch(
-                    "http://localhost:8001/api/review",
-                    {
-                        method: 'POST',
-                        headers: myHeaders,
-                        body: JSON.stringify({
-                            "animeId": this.id,
-                            "email": "user@uc.cl",
-                            "text": event.target.elements.name.value
-                        }),
-                        redirect: 'follow'
-                    }
-                )
-                    .then(res => res.json())
-                    .then(data => console.log(data.data));
+                    await fetch("http://localhost:8001/api/review", {
+                            method: 'POST',
+                            headers: myHeaders,
+                            body: JSON.stringify({
+                                "animeId": parseInt(this.id),
+                                "email": "user@uc.cl",
+                                "text": event.target.elements.name.value
+                            }),
+                            redirect: 'follow'
+                    })
+                        .then(res => {
+                            if (res.status == 400) {
+                                alert("Ya escribiste una review en este anime.")
+                            } 
+                            return res.json();
+                        })
+                        .then(data => {
+                            try {
+                                console.log(data.email)
+                                this.animeComments.push(data)
+                            } catch {}
+                        })
+                        .finally(
+                            event.target.elements.name.value = '',
+                        )
+                        .catch(err => console.log("ERR: ", err))
                 }
                 
             }
@@ -50,7 +60,6 @@
 
             this.dataReady = true;
         }
-
     }
     
 </script>
@@ -73,7 +82,7 @@
     <div class="comments">
         <h3>Reviews</h3>
         <div v-if="getAnimeData[1].length > 0">
-            <div class="box-comment" v-for="comment in getAnimeData[1]">
+            <div class="box-comment" v-for="comment in getAnimeData[1]" :key="comment.key.email">
                 <div class="user-comment">
                     <div class="email">{{ comment.key.email }}: </div>
                     <div class="text">{{ comment.text }}</div>
@@ -94,10 +103,6 @@
             </form>
         </div>
     </div>
-    
-
-
-
 </template>
 
 <style scoped>
