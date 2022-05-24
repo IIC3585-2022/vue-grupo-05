@@ -1,67 +1,67 @@
-<script>
-    export default {
-        data() {
-            return {
-                dataReady: false,
-                animeData: [],
-                animeComments: []
-            }
-        },
-        props: ['id'],
-        computed: {
-            getAnimeData: function () {
-                return [this.animeData, this.animeComments];
-            }
-        },
-        methods: {
-            handleSubmit: async function(event) {
-                if (event) {
-                    var myHeaders = new Headers();
-                    myHeaders.append("Content-Type", "application/json");
-                    await fetch("http://localhost:8001/api/review", {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: JSON.stringify({
-                                "animeId": parseInt(this.id),
-                                "email": "user@uc.cl",
-                                "text": event.target.elements.name.value
-                            }),
-                            redirect: 'follow'
-                    })
-                        .then(res => {
-                            if (res.status == 400) {
-                                alert("Ya escribiste una review en este anime.")
-                            } 
-                            return res.json();
-                        })
-                        .then(data => {
-                            try {
-                                console.log(data.email)
-                                this.animeComments.push(data)
-                            } catch {}
-                        })
-                        .finally(
-                            event.target.elements.name.value = '',
-                        )
-                        .catch(err => console.log("ERR: ", err))
-                }
-                
-            }
-        },
-        async mounted() {
-            await fetch(`https://api.jikan.moe/v4/anime/${this.id}`)
-                .then(res => res.json())
-                .then(data => this.animeData = data)
-            await fetch(`http://localhost:8001/api/review/anime/${this.id}`, {
-                method: 'GET', redirect: 'follow'
-            })
-                .then(res => res.json())
-                .then(data => this.animeComments = data)
+<script setup>
 
-            this.dataReady = true;
-        }
-    }
+    import { ref, onMounted, computed } from 'vue';
     
+    const props = defineProps({
+      id: String
+    });
+
+    console.log("Id: " + props.id);
+
+    const dataReady = ref(false);
+    const animeData = ref({});
+    const animeComments = ref([]);
+
+    const getAnimeData = computed(() => [animeData.value, animeComments.value]);
+
+    const loadAnimeComments = async () => {
+      var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+
+      fetch(`https://vue-grupo5-backend.herokuapp.com/api/review/anime/${props.id}`, requestOptions)
+        .then(response => response.json())
+        .then(result => animeComments.value = result)
+        .catch(error => console.log('error', error));  
+    }
+
+    const handleSubmit = async (event) => {
+      if (event){
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        await fetch("https://vue-grupo5-backend.herokuapp.com/api/review", {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify({
+                    "animeId": parseInt(props.id),
+                    "email": "test8@uc.cl",
+                    "text": event.target.elements.name.value
+                }),
+                redirect: 'follow'
+        }).then(res => {
+          if (res.status == 400) {
+            alert("Ya escribiste una review en este anime.")
+          }
+          return res.json();
+        }).then(data => {
+            console.log(data);
+            try {
+                animeComments.value = [...animeComments.value, data];
+            } catch {}
+        }).finally(
+          event.target.elements.name.value = '',
+        ).catch(err => console.log("ERR: ", err))
+      }
+    };
+
+    onMounted( async () => {
+      await fetch(`https://api.jikan.moe/v4/anime/${props.id}`)
+        .then(res => res.json())
+        .then(data => animeData.value = data);
+      await loadAnimeComments();
+      dataReady.value = true;
+    });
 </script>
 
 
